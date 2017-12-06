@@ -1,0 +1,19 @@
+{
+    "name": "edwrodrig/deployer",
+    "description": "Deployer",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Edwin Rodríguez",
+            "email": "edwrodrig@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^7.0"
+    },
+    "autoload" : {
+        "psr-4" :  {
+          "edwrodrig\\deployer\\" : "src/"
+        }
+    }
+}
