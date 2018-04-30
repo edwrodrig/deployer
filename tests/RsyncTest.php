@@ -12,4 +12,16 @@ use PHPUnit\Framework\TestCase;
 class RsyncTest extends TestCase
 {
 
+    /**
+     * @expectedException \edwrodrig\deployer\exception\RsyncException
+     * @expectedExceptionMessage Executable not found
+     * @expectedExceptionCode 127
+     *
+     * @throws \edwrodrig\deployer\exception\RsyncException
+     */
+    public function test() {
+        $r = new Rsync;
+        $r->set_executable('test_rsync');
+        $r->execute_command();
+    }
 }

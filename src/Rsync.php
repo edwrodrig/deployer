@@ -43,9 +43,21 @@ class Rsync
         return $this->get_command() . " --dry-run";
     }
 
+    /**
+     * -r recurse into directories
+     * -L transform symlink into referent file/dir
+     * -p preserve permissions
+     * -t preserve modification times
+     * -v verbose
+     * -z compress
+     * -c skip based on checksum, not mod-time & size
+     * --delete delete extraneous files from dest dirs
+     * --progress show progress during transfer
+     * @return string
+     */
     public function get_command() : string {
         return sprintf(
-            '%s -rLptgoDvzc -e "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" --progress %s %s:%s/live --delete',
+            '%s -rLptvzc -e "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" --progress %s %s:%s/live --delete',
             $this->executable,
             $this->source_dir,
             strval($this->target_host),
