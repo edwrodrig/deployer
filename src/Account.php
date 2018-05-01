@@ -8,10 +8,8 @@
 
 namespace edwrodrig\deployer;
 
-
 class Account
 {
-
     /**
      * @var string The user
      */
@@ -29,15 +27,15 @@ class Account
      * @throws exception\InvalidHostException
      */
     public function __construct(string $user, string $host) {
-        $this->set_user($user);
-        $this->set_host($host);
+        $this->setUser($user);
+        $this->setHost($host);
     }
 
     /**
      * @param string $user
      * @return Account
      */
-    public function set_user(string $user) : Account {
+    public function setUser(string $user) : Account {
         $user = trim($user);
         $this->user = empty($user) ? null : $user;
         return $this;
@@ -48,13 +46,14 @@ class Account
      * @return Account
      * @throws exception\InvalidHostException
      */
-    public function set_host(string $host) : Account {
+    public function setHost(string $host) : Account {
         $host = trim($host);
 
         if ( empty($host) )
             throw new exception\InvalidHostException($host);
-        else
-            $this->host = $host;
+
+
+        $this->host = $host;
 
         return $this;
     }

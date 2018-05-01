@@ -9,43 +9,86 @@ namespace edwrodrig\deployer;
 class Rsync
 {
 
-    private $target_host = null;
+    /**
+     * @var string
+     */
     private $target_dir = null;
+
+    /**
+     * @var string
+     */
     private $source_dir = null;
+
+    /**
+     * @var string
+     */
     private $executable = 'rsync';
 
-    public function set_target_host(Account $host) : Rsync {
-        $this->host = $host;
-        return $this;
+    /**
+     * @var bool
+     */
+    private $transform_symlinks_into_targets = false;
+
+    /**
+     * @var ssh\Ssh
+     */
+    private $ssh;
+
+    public function __construct() {
+        $this->ssh = new ssh\Ssh;
     }
 
-    public function set_target_dir(string $dir) : Rsync {
+    /**
+     * @param string $dir
+     * @return $this
+     */
+    public function setTargetDir(string $dir) : Rsync {
         $this->target_dir = $dir;
         return $this;
     }
 
-    public function set_source_dir(string $dir) : Rsync {
+    /**
+     * @param string $dir
+     * @return $this
+     */
+    public function setSourceDir(string $dir) : Rsync {
         $this->source_dir = $dir;
         return $this;
     }
 
-    public function set_executable(string $executable) {
+    /**
+     * @param string $executable
+     * @return $this
+     */
+    public function setExecutable(string $executable) : Rsync {
         $this->executable = $executable;
         return $this;
     }
 
+    public function doesExecutableExists() : bool {
+        $version_command = sprintf('%s --version', $this->executable);
+
+        if ( $result = Util::runCommand($version_command) ) {
+            if ( $result['exit_code'] == 0 )
+                return true;
+        }
+
+        return false;
+    }
+
     /**
-     * Get a test command that not makes any changes.
-     * It is just thr run command with --dry-run appended (perform a trial run with no changes made)
-     * @return string
+     * Enables L option in Rsync
+     * -L transform symlink into referent file/dir
+     * @param bool $enabled
+     * @return $this
      */
-    public function get_test_command() : string {
-        return $this->get_command() . " --dry-run";
+    public function transformSymlinksIntoTargets(bool $enabled) : Rsync {
+        $this->transform_symlinks_into_targets = $enabled;
+        return $this;
     }
 
     /**
      * -r recurse into directories
-     * -L transform symlink into referent file/dir
      * -p preserve permissions
      * -t preserve modification times
      * -v verbose
@@ -53,35 +96,54 @@ class Rsync
      * -c skip based on checksum, not mod-time & size
      * --delete delete extraneous files from dest dirs
      * --progress show progress during transfer
+     * @param bool $dry_run --dry-run (perform a trial run with no changes made)
      * @return string
+     * @throws ssh\exception\InvalidConfigFileException
+     * @throws ssh\exception\InvalidIdentityFileException
+     * @throws ssh\exception\InvalidKnownHostsFile
      */
-    public function get_command() : string {
+    public function getCommand(bool $dry_run = false) : string {
         return sprintf(
-            '%s -rLptvzc -e "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" --progress %s %s:%s/live --delete',
+            '%s -r%sptvzc --progress --delete  -e "%s" %s target:%s %s',
             $this->executable,
+            $this->transform_symlinks_into_targets ? 'L' : '',
+            $this->ssh->getCommand(),
             $this->source_dir,
-            strval($this->target_host),
-            $this->target_dir
+            $this->target_dir,
+            $dry_run ? ' --dry-run' : ''
         );
     }
 
-    public function execute_command() : void {
-        $command = $this->get_command();
-        passthru($command, $return);
-        if ( $return != 0 ) {
-            throw new exception\RsyncException($return);
+    /**
+     * Execute deploying using Rsync
+     * @param bool $test Test execution, execute rsync but not doing any changes, internally it uses --dry-run
+     * @return string
+     * @throws exception\RsyncException
+     * @throws ssh\exception\InvalidConfigFileException
+     * @throws ssh\exception\InvalidIdentityFileException
+     * @throws ssh\exception\InvalidKnownHostsFile
+     */
+    public function execute(bool $test = false) : string {
+        $command = $this->getCommand($test);
+        if ( $result = Util::runCommand($command) ) {
+            if ( $result['exit_code'] == 0 )
+                return $result['std']['out'];
+            else
+                throw new exception\RsyncException($result['exit_code'], $result['std']['err']);
+
+        } else {
+            throw new exception\RsyncException(255, 'proc_open fail');
         }
     }
 
-    public function __invoke()
+    /**
+     * @return ssh\Ssh
+     */
+    public function getSsh(): ssh\Ssh
     {
-        echo "DEPLOYING using RSYNC\n";
-        echo "Uploading files...\n";
-        $account = $this->account();
-        Utils::call(sprintf('rsync -rLptgoDvzc -e "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" --progress %s %s:%s/live --delete', $this->source, $account, $this->target), "Error uploading output [$this->source] to [$account:$this->target]");
-        echo "SITE DEPLOYED\n";
-
+        return $this->ssh;
     }
+
 
 }
 

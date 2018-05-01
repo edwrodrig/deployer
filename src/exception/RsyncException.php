@@ -29,12 +29,28 @@ class RsyncException extends Exception
         127 => 'Executable not found'
     ];
 
+    const SSH_ERRORS = [
+        '/ssh: Could not resolve hostname \S*: Name or service not known/',
+        '/Can\'t open user config file \S*/',
+        '/Warning: Identity file \S* not accessible: No such file or directory./',
+        '/Host key verification failed./',
+        '/Permission denied \(\S*/'
+    ];
+
     /**
      * RsyncException constructor.
      * @param int $exit_code Rsync exit code
+     * @param string $output
      */
-    public function __construct(int $exit_code)
+    public function __construct(int $exit_code, string $output = 'Other error')
     {
-        parent::__construct(self::EXIT_CODES[$exit_code] ?? 'Other error', $exit_code);
+        foreach ( self::SSH_ERRORS as $error ) {
+            if ( preg_match($error, $output, $matches) ) {
+                parent::__construct($matches[0], $exit_code);
+                return;
+            }
+        }
+
+        parent::__construct(self::EXIT_CODES[$exit_code] ?? $output, $exit_code);
     }
 }
