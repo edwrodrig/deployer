@@ -24,5 +24,15 @@
         "psr-4" : {
             "tests\\edwrodrig\\deployer\\" : "tests/"
         }
+    },
+    "archive" : {
+        "exclude" : [
+            "/files",
+            "/examples",
+            "/tests",
+            ".gitignore",
+            ".git",
+            "phpunit.xml.dist"
+        ]
     }
 }
