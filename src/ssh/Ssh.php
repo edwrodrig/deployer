@@ -1,20 +1,19 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: edwin
- * Date: 01-05-18
- * Time: 16:10
- */
+declare(strict_types=1);
 
 namespace edwrodrig\deployer\ssh;
 
 /**
- * Class Ssh
- * A ssh connection command builder.
+ * Class Ssh. A ssh connection command builder.
+ *
  * You can set the needed files and makes a command for you with the getCommand method.
- * 1.- It's recommended to make your custom configfile with a "target" Host.
- * 2.- Create your private keys with ssh-keygen and register public keys in target Host authorized_keys.
- * 3.- Create a known_hosts file with target host fingerprint
+ *
+ * * It's recommended to make your custom configfile with a "target" Host.
+ * * Create your private keys with ssh-keygen and register public keys in target Host authorized_keys.
+ * * Create a known_hosts file with target host fingerprint
+ * @see Ssh::setConfigFile() to set the config file
+ * @see Ssh::setKnownHostsFile() to set the known hosts file
+ * @see Ssh::setIdentityFile() to set the identity file
  * @package edwrodrig\deployer\ssh
  */
 class Ssh
@@ -36,6 +35,15 @@ class Ssh
     private $known_hosts_file;
 
     /**
+     * Set the ssh config file.
+     *
+     * Here some example of a config file content
+     * ```
+     * Host target
+     *    HostName localhost
+     *    User tc
+     *    Port 4222
+     * ```
      * @param string $config_file
      * @return Ssh
      */
@@ -46,6 +54,9 @@ class Ssh
     }
 
     /**
+     * Set the ssh identity file.
+     *
+     * Generate new identity files with ssh-keygen. Append the id_rsa.pub in the ~/.ssh/authorized_keys file in the target ssh account
      * @param string $identity_file
      * @return Ssh
      */
@@ -56,6 +67,9 @@ class Ssh
     }
 
     /**
+     * Set the known hosts file.
+     *
+     * This file is used to check the target host and prevent man in the middle vulnerabilities.
      * @param string $known_hosts_file
      * @return Ssh
      */
@@ -66,7 +80,11 @@ class Ssh
     }
 
     /**
-     * @return string
+     * Return a ssh command using the different configuration files. All files must exist or this would fail
+     * @see Ssh::setConfigFile()
+     * @see Ssh::setKnownHostsFile()
+     * @see Ssh::setIdentityFile()
+     * @return string the command itself
      * @throws exception\InvalidConfigFileException
      * @throws exception\InvalidIdentityFileException
      * @throws exception\InvalidKnownHostsFile

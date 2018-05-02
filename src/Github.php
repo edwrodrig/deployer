@@ -1,6 +1,24 @@
 <?php
+declare(strict_types=1);
+
 namespace edwrodrig\deployer;
 
+use edwrodrig\deployer\util\Util;
+
+/**
+ * Class Github
+ * Github deployer class.
+ * This class is minded to deploy github pages on github.
+ * This class just clone a github repository, then copy specified files to the cloned repository folder using rsync, and then commiting and pushing the changes to the origin.
+ * Rsync check the differences based on checksums and deletes files that are not in the source files.
+ * The ssh github credentials and known_host are setted by default. But you need to set the identity file for authentication
+ * @see Github::setTargetUser() To set the github user
+ * @see Github::setTargetRepoName() set the github repository name
+ * @see Github::setTargetRepoBranch() set the github repository branch
+ * @see Github::setSourceDir() set the github source dir to commit
+ * @see Github::execute() execute the command
+ * @see Github::getSsh() to set ssh configuration, specially the Identity file
+ */
 class Github {
 
     /**
@@ -44,21 +62,49 @@ class Github {
      */
     private $ssh;
 
+    /**
+     * Github constructor
+     * Construct a Github deployer.
+     * @see Github::setTargetUser() To set the github user
+     * @see Github::setTargetRepoName() set the github repository name
+     * @see Github::setTargetRepoBranch() set the github repository branch
+     * @see Github::setSourceDir() set the github source dir to commit
+     * @see Github::execute() execute the command
+     * @see Github::getSsh() to set ssh configuration, specially the Identity file
+     */
     public function __construct() {
         $this->ssh = new ssh\Ssh;
         $this->ssh->setConfigFile(__DIR__ . '/../files/github_credentials/config');
         $this->ssh->setKnownHostsFile(__DIR__ . '/../files/github_credentials/known_hosts');
     }
 
+    /**
+     * Get the ssh object. It manages the ssh connection config, so if you want to change it, for example to set the identify file, you need to retrieve and call its methods.
+     * @return ssh\Ssh
+     */
     public function getSsh() : ssh\Ssh {
         return $this->ssh;
     }
 
+    /**
+     * Set the github user
+     * @param string $user
+     * @return Github
+     */
     public function setTargetUser(string $user) : Github {
         $this->target_user = $user;
         return $this;
     }
 
+    /**
+     * Return the clone command that will we used for the commit. You need to set the user, the repository name and the repository branch.
+     * This method is used for debug or testing purposes.
+     * @param string $folder_name The target folder where the repository is cloned
+     * @see Github::setTargetUser() to set the target user
+     * @see Github::setTargetRepoName() to set the target repository name
+     * @see Github::setTargetRepoBranch() to set the target repository branch
+     * @return string
+     */
     public function getCloneCommand(string $folder_name) {
         return sprintf('%s clone github:%s/%s %s -b %s',
             $this->executable,
@@ -70,60 +116,76 @@ class Github {
     }
 
     /**
-     * @param bool $test
-     * @return string
+     * Execution of the deploy. If you don't call this then nothing is done.
+     * This clone the target repo in a temp folder, then rsync with the source dir and finally commit back to origin.
+     * You can do a test run with test param on true. Fails when no change is done.
+     * The temp folder is always deleted
+     * @param bool $test To just do a dry-run, the original repo is not changed
+     * @return string The stdout of the internal commands, generally shows the Rsync output
+     * @throws exception\GitCommandException
      * @throws exception\RsyncException
-     * @throws exception\TempFolderCreationException
      * @throws ssh\exception\InvalidConfigFileException
      * @throws ssh\exception\InvalidIdentityFileException
      * @throws ssh\exception\InvalidKnownHostsFile
-     * @throws exception\GitCommandException
+     * @throws \edwrodrig\deployer\util\exception\TempFolderCreationException
      */
     public function execute(bool $test = false) : string {
         $folder_name = Util::createTempFolder();
 
-        $std_out = '';
+        try {
+            $std_out = '';
 
-        $env = [
-            'GIT_SSH_COMMAND' => $this->ssh->getCommand(),
-            'EMAIL' => $this->email
-        ];
+            $env = [
+                'GIT_SSH_COMMAND' => $this->ssh->getCommand(),
+                'EMAIL' => $this->email
+            ];
 
-        $command = $this->getCloneCommand($folder_name);
-        $std_out.= self::runGitCommand($command, $folder_name, $env);
+            $command = $this->getCloneCommand($folder_name);
+            $std_out .= self::runGitCommand($command, $folder_name, $env);
 
-        $command = $this->getCopyCommand($folder_name);
-        $std_out.= Rsync::runRsyncCommand($command);
+            $command = $this->getCopyCommand($folder_name);
+            $std_out .= Rsync::runRsyncCommand($command);
 
-        $std_out.= self::runGitCommand('git add -A', $folder_name, $env);
+            $std_out .= self::runGitCommand('git add -A', $folder_name, $env);
 
-        $std_out.= self::runGitCommand(
-            sprintf('git commit -m "%s"', $this->commit_message),
-            $folder_name, $env
-        );
+            $std_out .= self::runGitCommand(
+                sprintf('git commit -m "%s"', $this->commit_message),
+                $folder_name, $env
+            );
 
-        $std_out.= self::runGitCommand(
-            sprintf('git push origin %s%s', $this->target_repo_branch, $test ? ' --dry-run' : ''),
-            $folder_name, $env
-        );
+            $std_out .= self::runGitCommand(
+                sprintf('git push origin %s%s', $this->target_repo_branch, $test ? ' --dry-run' : ''),
+                $folder_name, $env
+            );
 
-        return $std_out;
+
+            return $std_out;
+        } catch (   exception\RsyncException |
+                    ssh\exception\InvalidConfigFileException |
+                    ssh\exception\InvalidIdentityFileException |
+                    ssh\exception\InvalidKnownHostsFile |
+                    exception\GitCommandException $e ) {
+            throw $e;
+        } finally {
+            exec(sprintf('rm -rf %s', $folder_name));
+        }
     }
 
     /**
-     * @param string $command
-     * @param string $current_working_dir
-     * @param array $env
-     * @return mixed
-     * @throws exception\GitCommandException
+     * Utility method to run a git command. Just transform git errors to a GitCommandException with more clear information.
+     * It's used internally by some clases in this library
+     * @param string $command The command to run (ej: git add -A)
+     * @param string $current_working_dir currenct working dir of the command
+     * @param array $env Environment variables as an key value array
+     * @return string The standard output of the command
+     * @throws exception\GitCommandException At failure
      */
-    public static function runGitCommand(string $command, string $current_working_dir, array $env) {
+    public static function runGitCommand(string $command, string $current_working_dir, array $env) : string {
         if ( $result = Util::runCommand($command, $current_working_dir, $env) ) {
-            if ( $result['exit_code'] == 0 ) {
-                return $result['std']['out'];
-            } else
-                $std_err = empty($result['std']['err']) ? $result['std']['out'] : $result['std']['err'];
-                throw new exception\GitCommandException($result['exit_code'], $std_err);
+            if ( $result->getExitCode() == 0 )
+                return $result->getStdOut();
+            else
+                throw new exception\GitCommandException($result->getExitCode(), $result->getStdErrOrOut());
 
         } else {
             throw new exception\GitCommandException(255, 'proc_open fail');
@@ -131,6 +193,8 @@ class Github {
     }
 
     /**
+     * Returns the rsync copy command
+     * This method is used for debug or testing purposes.
      * -r recurse into directories
      * -p preserve permissions
      * -t preserve modification times
@@ -151,6 +215,7 @@ class Github {
     }
 
     /**
+     * The target github repository name
      * @param string $target_repo_name
      * @return $this
      */
@@ -161,6 +226,7 @@ class Github {
     }
 
     /**
+     * The target github repository branch. In github pages it used to be master or gh_pages
      * @param string $target_repo_branch
      * @return $this
      */
@@ -171,7 +237,10 @@ class Github {
     }
 
     /**
+     * The source dir to commit. This directory is copied to the repo and then commited when execute is called.
+     * Don't use trailing / in the dir name
      * @param string $source_dir
+     * @see Github::execute() To execute
      * @return $this
      */
     public function setSourceDir(string $source_dir): Github

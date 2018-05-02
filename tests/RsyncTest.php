@@ -64,9 +64,9 @@ class RsyncTest extends TestCase
      * @throws \edwrodrig\deployer\ssh\exception\InvalidKnownHostsFile
      */
     public function testWrongIdentityFile() {
+        sleep(1);
         $r = new Rsync;
-        ssh\SshTest::setCorrectFiles($r->getSsh());
-        $r->getSsh()->setIdentityFile(__DIR__ . '/files/wrong/id_rsa');
+        ssh\SshTest::setWrongIdentity($r->getSsh());
         $r->setSourceDir(__DIR__ .  '/files/correct');
         $r->execute(true);
     }
@@ -100,7 +100,6 @@ class RsyncTest extends TestCase
         $r = new Rsync;
         ssh\SshTest::setCorrectFiles($r->getSsh());
         $r->setSourceDir(__DIR__ .  '/files/correct');
-        var_dump($r->getCommand(true));
         $return = $r->execute(true);
         $this->assertStringStartsWith("sending incremental file list", $return);
     }

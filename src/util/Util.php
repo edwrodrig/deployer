@@ -1,21 +1,17 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: edwin
- * Date: 30-04-18
- * Time: 16:03
- */
+declare(strict_types=1);
 
-namespace edwrodrig\deployer;
+namespace edwrodrig\deployer\util;
 
 
 class Util
 {
     /**
+     * Just execute a command.
      * @param string $command Command to execute
-     * @param null|string $current_working_dir
-     * @param array $env Environment variables
-     * @return array|bool
+     * @param null|string $current_working_dir The current working dir
+     * @param array $env Environment variables The environment variables in an key value array
+     * @return bool|CommandReturn
      */
     public static function runCommand(string $command, ?string $current_working_dir = null, array $env = []) {
         $process =  proc_open(
@@ -44,16 +40,15 @@ class Util
 
         $return = proc_close($process);
 
-        return [
-            'exit_code' => $return,
-            'std' => [
-                'out' => $std_out,
-                'err' => $std_err
-            ]
-        ];
+        return new CommandReturn($return, $std_out, $std_err);
 
     }
 
+    /**
+     * Create a temporary folder
+     * @return string The temp folder name
+     * @throws exception\TempFolderCreationException
+     */
     public static function createTempFolder() {
         $tempfile = tempnam(sys_get_temp_dir(),'edwrodrig_deployer');
         // you might want to reconsider this line when using this snippet.

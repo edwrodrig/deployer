@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: edwin
- * Date: 01-05-18
- * Time: 16:24
- */
+declare(strict_types=1);
 
 namespace edwrodrig\deployer\ssh\exception;
 

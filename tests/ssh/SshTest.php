@@ -14,9 +14,17 @@ use PHPUnit\Framework\TestCase;
 class SshTest extends TestCase
 {
     public static function setCorrectFiles(Ssh $ssh) : Ssh {
+        chmod(__DIR__ . '/../files/correct/id_rsa', 0600);
         $ssh->setConfigFile(__DIR__ . '/../files/correct/config');
         $ssh->setIdentityFile(__DIR__ . '/../files/correct/id_rsa');
         $ssh->setKnownHostsFile(__DIR__ . '/../files/correct/known_hosts');
+        return $ssh;
+    }
+
+    public static function setWrongIdentity(Ssh $ssh) : Ssh {
+        self::setCorrectFiles($ssh);
+        chmod(__DIR__ . '/../files/wrong/id_rsa', 0600);
+        $ssh->setIdentityFile(__DIR__ . '/../files/wrong/id_rsa');
         return $ssh;
     }
 

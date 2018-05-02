@@ -1,9 +1,20 @@
 <?php
+declare(strict_types=1);
 
 namespace edwrodrig\deployer;
 
+use edwrodrig\deployer\util\Util;
+
 /**
- * Class Rsync Deployer
+ * Class Rsync Deployer.
+ *
+ * This class is minded to do a rsync based deploy using ssh. It copies the source files to a remote target directory comparing checksums and deleting not existant files.
+ * You need to set the Ssh credentials.
+ * Target ssh user, port and host must be set in the ssh config file, in the Ssh object
+ * @see Rsync::getSsh() to set ssh credentials
+ * @see Rsync::setTargetDir() to set the target dir
+ * @see Rsync::setSourceDir() to set the source dir
+ * @see Rsync::execute() to execute the task
  * @package edwrodrig\deployer
  */
 class Rsync
@@ -34,11 +45,16 @@ class Rsync
      */
     private $ssh;
 
+    /**
+     * Rsync constructor.
+     * Construct a Rsync deployer instance.
+     */
     public function __construct() {
         $this->ssh = new ssh\Ssh;
     }
 
     /**
+     * The target dir to copy. It should be relative to the HOME PATH ot the remote account
      * @param string $dir
      * @return $this
      */
@@ -48,6 +64,7 @@ class Rsync
     }
 
     /**
+     * The source dir to copy. If you want to copy all files in the file /home/user/some_folder use /home/user/some_folder/*
      * @param string $dir
      * @return $this
      */
@@ -57,6 +74,7 @@ class Rsync
     }
 
     /**
+     * Set rsync executable. Needed when it is not in the PATH as rsync
      * @param string $executable
      * @return $this
      */
@@ -65,11 +83,15 @@ class Rsync
         return $this;
     }
 
+    /**
+     * Check if rsync command exists
+     * @return bool
+     */
     public function doesExecutableExists() : bool {
         $version_command = sprintf('%s --version', $this->executable);
 
         if ( $result = Util::runCommand($version_command) ) {
-            if ( $result['exit_code'] == 0 )
+            if ( $result->getExitCode() == 0 )
                 return true;
         }
 
@@ -77,6 +99,7 @@ class Rsync
     }
 
     /**
+     * When Thins option is enabled, the symlinks are resolved and copied as files in the target remote dir
      * Enables L option in Rsync
      * -L transform symlink into referent file/dir
      * @param bool $enabled
@@ -88,6 +111,8 @@ class Rsync
     }
 
     /**
+     * Get the rsync command to execute.
+     * This is used internally and for debug and testing proposes.
      * -r recurse into directories
      * -p preserve permissions
      * -t preserve modification times
@@ -130,16 +155,17 @@ class Rsync
     }
 
     /**
+     * Run an rsync command. Just wrap the exit codes an standard output and error in Exception
      * @param string $command
-     * @return mixed
+     * @return string The standard output, generally the progress of the rsync command
      * @throws exception\RsyncException
      */
-    public static  function runRsyncCommand(string $command) {
+    public static  function runRsyncCommand(string $command) : string {
         if ( $result = Util::runCommand($command) ) {
-            if ( $result['exit_code'] == 0 )
-                return $result['std']['out'];
+            if ( $result->getExitCode() == 0 )
+                return $result->getStdOut();
             else
-                throw new exception\RsyncException($result['exit_code'], $result['std']['err']);
+                throw new exception\RsyncException($result->getExitCode(), $result->getStdErrOrOut());
 
         } else {
             throw new exception\RsyncException(255, 'proc_open fail');
@@ -147,6 +173,7 @@ class Rsync
     }
 
     /**
+     *  Get the ssh object. It manages the ssh connection config, so if you want to change it, for example to set the identify file, you need to retrieve and call its methods.
      * @return ssh\Ssh
      */
     public function getSsh(): ssh\Ssh
