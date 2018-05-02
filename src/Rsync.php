@@ -125,6 +125,16 @@ class Rsync
      */
     public function execute(bool $test = false) : string {
         $command = $this->getCommand($test);
+        return self::runRsyncCommand($command);
+
+    }
+
+    /**
+     * @param string $command
+     * @return mixed
+     * @throws exception\RsyncException
+     */
+    public static  function runRsyncCommand(string $command) {
         if ( $result = Util::runCommand($command) ) {
             if ( $result['exit_code'] == 0 )
                 return $result['std']['out'];

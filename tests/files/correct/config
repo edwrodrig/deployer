@@ -2,4 +2,9 @@ Host target
 	HostName localhost
 	User tc
 	Port 4222
+
+Host github
+    HostName localhost
+    User tc
+    Port 4222
 	

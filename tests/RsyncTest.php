@@ -42,6 +42,9 @@ class RsyncTest extends TestCase
      * @expectedExceptionCode 255
      * @expectedExceptionMessage ssh: Could not resolve hostname unknown_host: Name or service not known
      * @throws \edwrodrig\deployer\exception\RsyncException
+     * @throws \edwrodrig\deployer\ssh\exception\InvalidConfigFileException
+     * @throws \edwrodrig\deployer\ssh\exception\InvalidIdentityFileException
+     * @throws \edwrodrig\deployer\ssh\exception\InvalidKnownHostsFile
      */
     public function testWrongHostName() {
         sleep(1);
@@ -56,6 +59,9 @@ class RsyncTest extends TestCase
      * @expectedExceptionCode 255
      * @expectedExceptionMessage Permission denied (publickey,password,keyboard-interactive).
      * @throws \edwrodrig\deployer\exception\RsyncException
+     * @throws \edwrodrig\deployer\ssh\exception\InvalidConfigFileException
+     * @throws \edwrodrig\deployer\ssh\exception\InvalidIdentityFileException
+     * @throws \edwrodrig\deployer\ssh\exception\InvalidKnownHostsFile
      */
     public function testWrongIdentityFile() {
         $r = new Rsync;
@@ -70,6 +76,9 @@ class RsyncTest extends TestCase
      * @expectedExceptionCode 255
      * @expectedExceptionMessage Host key verification failed.
      * @throws \edwrodrig\deployer\exception\RsyncException
+     * @throws \edwrodrig\deployer\ssh\exception\InvalidConfigFileException
+     * @throws \edwrodrig\deployer\ssh\exception\InvalidIdentityFileException
+     * @throws \edwrodrig\deployer\ssh\exception\InvalidKnownHostsFile
      */
     public function testWrongKnownHostFile() {
         sleep(1);
@@ -82,18 +91,25 @@ class RsyncTest extends TestCase
 
     /**
      * @throws \edwrodrig\deployer\exception\RsyncException
+     * @throws \edwrodrig\deployer\ssh\exception\InvalidConfigFileException
+     * @throws \edwrodrig\deployer\ssh\exception\InvalidIdentityFileException
+     * @throws \edwrodrig\deployer\ssh\exception\InvalidKnownHostsFile
      */
     public function testHappy() {
         sleep(1);
         $r = new Rsync;
         ssh\SshTest::setCorrectFiles($r->getSsh());
         $r->setSourceDir(__DIR__ .  '/files/correct');
+        var_dump($r->getCommand(true));
         $return = $r->execute(true);
         $this->assertStringStartsWith("sending incremental file list", $return);
     }
 
     /**
      * @throws \edwrodrig\deployer\exception\RsyncException
+     * @throws \edwrodrig\deployer\ssh\exception\InvalidConfigFileException
+     * @throws \edwrodrig\deployer\ssh\exception\InvalidIdentityFileException
+     * @throws \edwrodrig\deployer\ssh\exception\InvalidKnownHostsFile
      * @expectedException \edwrodrig\deployer\exception\RsyncException
      * @expectedExceptionCode 23
      * @expectedExceptionMessage Partial transfer due to error

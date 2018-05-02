@@ -28,6 +28,7 @@
     "archive" : {
         "exclude" : [
             "/files",
+            "!/files/github_credentials",
             "/examples",
             "/tests",
             ".gitignore",

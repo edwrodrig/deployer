@@ -13,10 +13,11 @@ class Util
 {
     /**
      * @param string $command Command to execute
+     * @param null|string $current_working_dir
      * @param array $env Environment variables
      * @return array|bool
      */
-    public static function runCommand(string $command, array $env) {
+    public static function runCommand(string $command, ?string $current_working_dir = null, array $env = []) {
         $process =  proc_open(
             $command,
             [
@@ -25,7 +26,7 @@ class Util
                 2 => ['pipe', 'w']  // STDERR
             ],
             $pipes,
-            null,
+            $current_working_dir,
             $env
         );
 

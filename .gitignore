@@ -6,3 +6,4 @@ output
 /.idea/*
 !/.idea/php.xml
 !/.idea/runConfigurations
+/examples/id_rsa*
