@@ -8,7 +8,6 @@ use edwrodrig\deployer\exception\RsyncException;
 
 include __DIR__ . '/../vendor/autoload.php';
 
-
 $github = new \edwrodrig\deployer\Github;
 
 $github

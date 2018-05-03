@@ -1,0 +1,5 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Rsync" type="PhpLocalRunConfigurationType" factoryName="PHP Console" folderName="Examples" path="$PROJECT_DIR$/examples/rsync_deploy.php">
+    <method />
+  </configuration>
+</component>
