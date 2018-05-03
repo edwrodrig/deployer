@@ -1,6 +1,6 @@
 edwrodrig\deployer 
 ========
-Library to deploy folders to `github` or remotes using `rsync`
+Library to deploy folders to __github__ or remotes using __rsync__
 
 [![Latest Stable Version](https://poser.pugx.org/edwrodrig/deployer/v/stable)](https://packagist.org/packages/edwrodrig/deployer)
 [![Total Downloads](https://poser.pugx.org/edwrodrig/deployer/downloads)](https://packagist.org/packages/edwrodrig/deployer)
@@ -10,9 +10,9 @@ Library to deploy folders to `github` or remotes using `rsync`
 
 Deploy static generated pages to:
  * a github repository used as a [github pages](https://pages.github.com/) host.
- * a remote folder using `rsync` through `ssh`.
+ * a remote folder using __rsync__ through __ssh__.
  
-All transfer are secured composer require edwrodrig/deployerssh` with proper 
+All transfer are secured by ssh with proper 
 **[host key fingerprints](https://superuser.com/questions/421997/what-is-a-ssh-key-fingerprint-and-how-is-it-generated)** and
 **[private keys](https://unix.stackexchange.com/questions/23291/how-to-ssh-to-remote-server-using-a-private-key)**.
 If you don't know what are these or why are important go to read about it now.
@@ -31,7 +31,7 @@ composer require edwrodrig/deployer
 ```
 
 ## Testing
-This library uses `phpunit`, but you need to run a virtual machine with a dummy host. The dummy host is a [TinyCoreLinux](http://distro.ibiblio.org/tinycorelinux/) with `ssh`, `rsync` and `git`.
+This library uses __phpunit__, but you need to run a virtual machine with a dummy host. The dummy host is a [TinyCoreLinux](http://distro.ibiblio.org/tinycorelinux/) with __ssh__, __rsync__ and __git__.
 The virtual machine is provided as a [VirtualBox](https://www.virtualbox.org) appliance in [`files/DeployerTextTarget.ova`](https://github.com/edwrodrig/deployer/tree/master/files). The virtual machine must be running while the test are running.
 
 ## License

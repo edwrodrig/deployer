@@ -38,12 +38,19 @@ class RsyncException extends Exception
     ];
 
     /**
+     * @var string
+     */
+    private $full_error;
+
+    /**
      * RsyncException constructor.
      * @param int $exit_code Rsync exit code
      * @param string $output
      */
     public function __construct(int $exit_code, string $output = 'Other error')
     {
+        $this->full_error = $output;
+
         foreach ( self::SSH_ERRORS as $error ) {
             if ( preg_match($error, $output, $matches) ) {
                 parent::__construct($matches[0], $exit_code);
@@ -52,5 +59,13 @@ class RsyncException extends Exception
         }
 
         parent::__construct(self::EXIT_CODES[$exit_code] ?? $output, $exit_code);
+    }
+
+    /**
+     * Return the full error message
+     * @return string
+     */
+    public function getFullError() : string {
+        return $this->full_error;
     }
 }

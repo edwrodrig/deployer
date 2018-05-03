@@ -3,6 +3,9 @@
  *  This script is an example of deploying to github. It is ideal for deploying github pages
  */
 
+use edwrodrig\deployer\exception\GitCommandException;
+use edwrodrig\deployer\exception\RsyncException;
+
 include __DIR__ . '/../vendor/autoload.php';
 
 
@@ -22,6 +25,8 @@ $github->getSsh()->setIdentityFile(__DIR__ . '/id_rsa');
 
 try {
     echo $github->execute(true); // true means dry run
+} catch ( RsyncException | GitCommandException $e ) {
+    echo get_class($e) , "\n", $e->getMessage(), "\n", $e->getFullError(). "\n";
 } catch ( Exception $e ) {
     echo get_class($e) , "\n", $e->getMessage(), "\n";
 }
