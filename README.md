@@ -24,6 +24,8 @@ so it should pop up nicely if you're using IDEs like [PhpStorm](https://www.jetb
 ### Examples
 
 * [Github deploy](https://github.com/edwrodrig/deployer/blob/master/examples/github_deploy.php)
+* [Rsync deploy](https://github.com/edwrodrig/deployer/blob/master/examples/rsync_deploy.php)
+
 
 ## Composer
 ```
