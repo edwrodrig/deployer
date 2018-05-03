@@ -77,4 +77,15 @@ class SshTest extends TestCase
         $this->assertStringStartsWith('ssh', $ssh->getCommand());
     }
 
+    /**
+     * @throws \edwrodrig\deployer\ssh\exception\InvalidConfigFileException
+     * @throws \edwrodrig\deployer\ssh\exception\InvalidIdentityFileException
+     * @throws \edwrodrig\deployer\ssh\exception\InvalidKnownHostsFile
+     */
+    public function testDefaultIdentityFile() {
+        $ssh = self::setCorrectFiles(new Ssh);
+        $ssh->setIdentityFile(null);
+        $this->assertStringStartsWith('ssh -F', $ssh->getCommand());
+    }
+
 }

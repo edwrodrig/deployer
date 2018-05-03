@@ -25,9 +25,9 @@ class Ssh
     private $config_file;
 
     /**
-     * @var string
+     * @var ?string
      */
-    private $identity_file;
+    private $identity_file = null;
 
     /**
      * @var string
@@ -56,11 +56,12 @@ class Ssh
     /**
      * Set the ssh identity file.
      *
+     * Set to null if you want to use default identity.
      * Generate new identity files with ssh-keygen. Append the id_rsa.pub in the ~/.ssh/authorized_keys file in the target ssh account
-     * @param string $identity_file
+     * @param string|null $identity_file
      * @return Ssh
      */
-    public function setIdentityFile(string $identity_file) : Ssh
+    public function setIdentityFile(?string $identity_file) : Ssh
     {
         $this->identity_file = $identity_file;
         return $this;
@@ -90,15 +91,23 @@ class Ssh
      * @throws exception\InvalidKnownHostsFile
      */
     public function getCommand() : string {
+        $identity_section =  '';
+
+        if ( !is_null($this->identity_file) ) {
+            if (file_exists($this->identity_file))
+                $identity_section = sprintf('-i %s ', $this->identity_file);
+            else
+                throw new exception\InvalidIdentityFileException($this->identity_file);
+        }
+
         if ( !file_exists($this->known_hosts_file))
             throw new exception\InvalidKnownHostsFile($this->known_hosts_file);
-        if ( !file_exists($this->identity_file))
-            throw new exception\InvalidIdentityFileException($this->identity_file);
+
         if ( !file_exists($this->config_file))
             throw new exception\InvalidConfigFileException($this->config_file);
 
-        return sprintf("ssh -i %s -F %s -o BatchMode=yes -o UserKnownHostsFile=%s",
-            $this->identity_file,
+        return sprintf("ssh %s-F %s -o BatchMode=yes -o UserKnownHostsFile=%s",
+            $identity_section,
             $this->config_file,
             $this->known_hosts_file
             );
