@@ -15,6 +15,10 @@ class RsyncTest extends TestCase
 {
 
     /**
+     * @throws \edwrodrig\deployer\exception\RsyncException
+     * @throws \edwrodrig\deployer\ssh\exception\InvalidConfigFileException
+     * @throws \edwrodrig\deployer\ssh\exception\InvalidIdentityFileException
+     * @throws \edwrodrig\deployer\ssh\exception\InvalidKnownHostsFile
      * @expectedException \edwrodrig\deployer\exception\RsyncException
      * @expectedExceptionMessage Executable not found
      * @expectedExceptionCode 127

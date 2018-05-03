@@ -8,7 +8,8 @@ use edwrodrig\deployer\util\Util;
 /**
  * Class Rsync Deployer.
  *
- * This class is minded to do a rsync based deploy using ssh. It copies the source files to a remote target directory comparing checksums and deleting not existant files.
+ * This class is minded to do a rsync based deploy using ssh.
+ * It copies the source files to a remote target directory comparing checksums and deleting not existant files.
  * You need to set the Ssh credentials.
  * Target ssh user, port and host must be set in the ssh config file, in the Ssh object
  * @see Rsync::getSsh() to set ssh credentials
@@ -47,6 +48,7 @@ class Rsync
 
     /**
      * Rsync constructor.
+     *
      * Construct a Rsync deployer instance.
      */
     public function __construct() {
@@ -54,7 +56,9 @@ class Rsync
     }
 
     /**
-     * The target dir to copy. It should be relative to the HOME PATH ot the remote account
+     * The target dir to copy.
+     *
+     * It should be relative to the HOME PATH ot the remote account
      * @param string $dir
      * @return $this
      */
@@ -64,7 +68,9 @@ class Rsync
     }
 
     /**
-     * The source dir to copy. If you want to copy all files in the file /home/user/some_folder use /home/user/some_folder/*
+     * The source dir to copy.
+     *
+     * If you want to copy all files in the file /home/user/some_folder use /home/user/some_folder/*
      * @param string $dir
      * @return $this
      */
@@ -100,8 +106,11 @@ class Rsync
 
     /**
      * When Thins option is enabled, the symlinks are resolved and copied as files in the target remote dir
+     *
      * Enables L option in Rsync
+     * ```
      * -L transform symlink into referent file/dir
+     * ```
      * @param bool $enabled
      * @return $this
      */
@@ -112,7 +121,10 @@ class Rsync
 
     /**
      * Get the rsync command to execute.
+     *
      * This is used internally and for debug and testing proposes.
+     * The commands used in the command are the following
+     * ```
      * -r recurse into directories
      * -p preserve permissions
      * -t preserve modification times
@@ -121,6 +133,7 @@ class Rsync
      * -c skip based on checksum, not mod-time & size
      * --delete delete extraneous files from dest dirs
      * --progress show progress during transfer
+     * ```
      * @param bool $dry_run --dry-run (perform a trial run with no changes made)
      * @return string
      * @throws ssh\exception\InvalidConfigFileException
@@ -173,7 +186,12 @@ class Rsync
     }
 
     /**
-     *  Get the ssh object. It manages the ssh connection config, so if you want to change it, for example to set the identify file, you need to retrieve and call its methods.
+     *  Get the ssh object.
+     *
+     * It manages the ssh connection config,
+     * so if you want to change it,
+     * for example to set the identify file,
+     * you need to retrieve and call its methods.
      * @return ssh\Ssh
      */
     public function getSsh(): ssh\Ssh

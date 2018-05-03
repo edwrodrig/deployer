@@ -16,10 +16,10 @@ class GithubTest extends TestCase
     /**
      * @throws \edwrodrig\deployer\exception\GitCommandException
      * @throws \edwrodrig\deployer\exception\RsyncException
-     * @throws \edwrodrig\deployer\exception\TempFolderCreationException
      * @throws \edwrodrig\deployer\ssh\exception\InvalidConfigFileException
      * @throws \edwrodrig\deployer\ssh\exception\InvalidIdentityFileException
      * @throws \edwrodrig\deployer\ssh\exception\InvalidKnownHostsFile
+     * @throws \edwrodrig\deployer\util\exception\TempFolderCreationException
      */
     public function testHappy() {
         sleep(1);
@@ -34,9 +34,12 @@ class GithubTest extends TestCase
     }
 
     /**
+     * @throws \edwrodrig\deployer\exception\GitCommandException
+     * @throws \edwrodrig\deployer\exception\RsyncException
      * @throws \edwrodrig\deployer\ssh\exception\InvalidConfigFileException
      * @throws \edwrodrig\deployer\ssh\exception\InvalidIdentityFileException
      * @throws \edwrodrig\deployer\ssh\exception\InvalidKnownHostsFile
+     * @throws \edwrodrig\deployer\util\exception\TempFolderCreationException
      * @expectedException \edwrodrig\deployer\exception\GitCommandException
      * @expectedExceptionMessage nothing to commit, working directory clean
      */
@@ -52,9 +55,12 @@ class GithubTest extends TestCase
     }
 
     /**
+     * @throws \edwrodrig\deployer\exception\GitCommandException
+     * @throws \edwrodrig\deployer\exception\RsyncException
      * @throws \edwrodrig\deployer\ssh\exception\InvalidConfigFileException
      * @throws \edwrodrig\deployer\ssh\exception\InvalidIdentityFileException
      * @throws \edwrodrig\deployer\ssh\exception\InvalidKnownHostsFile
+     * @throws \edwrodrig\deployer\util\exception\TempFolderCreationException
      * @expectedException \edwrodrig\deployer\exception\GitCommandException
      * @expectedExceptionMessage Permission denied (publickey,password,keyboard-interactive).
      */
@@ -71,9 +77,12 @@ class GithubTest extends TestCase
     }
 
     /**
+     * @throws \edwrodrig\deployer\exception\GitCommandException
+     * @throws \edwrodrig\deployer\exception\RsyncException
      * @throws \edwrodrig\deployer\ssh\exception\InvalidConfigFileException
      * @throws \edwrodrig\deployer\ssh\exception\InvalidIdentityFileException
      * @throws \edwrodrig\deployer\ssh\exception\InvalidKnownHostsFile
+     * @throws \edwrodrig\deployer\util\exception\TempFolderCreationException
      * @expectedException \edwrodrig\deployer\exception\GitCommandException
      * @expectedExceptionMessage Host key verification failed.
      */
@@ -90,9 +99,12 @@ class GithubTest extends TestCase
     }
 
     /**
+     * @throws \edwrodrig\deployer\exception\GitCommandException
+     * @throws \edwrodrig\deployer\exception\RsyncException
      * @throws \edwrodrig\deployer\ssh\exception\InvalidConfigFileException
      * @throws \edwrodrig\deployer\ssh\exception\InvalidIdentityFileException
      * @throws \edwrodrig\deployer\ssh\exception\InvalidKnownHostsFile
+     * @throws \edwrodrig\deployer\util\exception\TempFolderCreationException
      * @expectedException \edwrodrig\deployer\exception\GitCommandException
      * @expectedExceptionMessage ssh: Could not resolve hostname github: Name or service not known
      */

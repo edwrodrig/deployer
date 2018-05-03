@@ -1,6 +1,6 @@
 {
     "name": "edwrodrig/deployer",
-    "description": "Library to deploy folder to remote locations through git, rsync or ssh",
+    "description": "Library to deploy folders to github or remotes using rsync",
     "license": "MIT",
     "authors": [
         {
@@ -33,7 +33,8 @@
             "/tests",
             ".gitignore",
             ".git",
-            "phpunit.xml.dist"
+            "phpunit.xml.dist",
+            "README.md"
         ]
     }
 }

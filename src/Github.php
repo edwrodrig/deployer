@@ -7,11 +7,13 @@ use edwrodrig\deployer\util\Util;
 
 /**
  * Class Github
- * Github deployer class.
- * This class is minded to deploy github pages on github.
+ * Github deployer class. This class is minded to deploy github pages on github.
+ *
+ *
  * This class just clone a github repository, then copy specified files to the cloned repository folder using rsync, and then commiting and pushing the changes to the origin.
  * Rsync check the differences based on checksums and deletes files that are not in the source files.
- * The ssh github credentials and known_host are setted by default. But you need to set the identity file for authentication
+ * The ssh github credentials and known_host are setted by default.
+ * But you need to set the identity file for authentication
  * @see Github::setTargetUser() To set the github user
  * @see Github::setTargetRepoName() set the github repository name
  * @see Github::setTargetRepoBranch() set the github repository branch
@@ -79,7 +81,11 @@ class Github {
     }
 
     /**
-     * Get the ssh object. It manages the ssh connection config, so if you want to change it, for example to set the identify file, you need to retrieve and call its methods.
+     * Get the ssh object.
+     *
+     * It manages the ssh connection config, so if you want to change it,
+     * for example to set the identify file,
+     * you need to retrieve and call its methods.
      * @return ssh\Ssh
      */
     public function getSsh() : ssh\Ssh {
@@ -97,7 +103,9 @@ class Github {
     }
 
     /**
-     * Return the clone command that will we used for the commit. You need to set the user, the repository name and the repository branch.
+     * Return the clone command that will we used for the commit.
+     *
+     * You need to set the user, the repository name and the repository branch.
      * This method is used for debug or testing purposes.
      * @param string $folder_name The target folder where the repository is cloned
      * @see Github::setTargetUser() to set the target user
@@ -117,6 +125,7 @@ class Github {
 
     /**
      * Execution of the deploy. If you don't call this then nothing is done.
+     *
      * This clone the target repo in a temp folder, then rsync with the source dir and finally commit back to origin.
      * You can do a test run with test param on true. Fails when no change is done.
      * The temp folder is always deleted
@@ -172,7 +181,9 @@ class Github {
     }
 
     /**
-     * Utility method to run a git command. Just transform git errors to a GitCommandException with more clear information.
+     * Utility method to run a git command.
+     *
+     * Just transform git errors to a GitCommandException with more clear information.
      * It's used internally by some clases in this library
      * @param string $command The command to run (ej: git add -A)
      * @param string $current_working_dir currenct working dir of the command
@@ -193,8 +204,11 @@ class Github {
     }
 
     /**
-     * Returns the rsync copy command
+     * Returns the rsync copy command.
+     *
      * This method is used for debug or testing purposes.
+     * The params usend in the command are the following
+     * ```
      * -r recurse into directories
      * -p preserve permissions
      * -t preserve modification times
@@ -204,6 +218,7 @@ class Github {
      * --delete delete extraneous files from dest dirs
      * --progress show progress during transfer
      * --exclude=.git*
+     * ```
      * @param string $target
      * @return string
      */
@@ -237,7 +252,9 @@ class Github {
     }
 
     /**
-     * The source dir to commit. This directory is copied to the repo and then commited when execute is called.
+     * The source dir to commit.
+     *
+     * This directory is copied to the repo and then commited when execute is called.
      * Don't use trailing / in the dir name
      * @param string $source_dir
      * @see Github::execute() To execute
