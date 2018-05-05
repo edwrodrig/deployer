@@ -130,6 +130,8 @@ class Github {
      * You can do a test run with test param on true. Fails when no change is done.
      * The temp folder is always deleted
      * @param bool $test To just do a dry-run, the original repo is not changed
+     * @uses Github::getCloneCommand() for the repository cloning
+     * @uses Github::getCopyCommand() for the rsync copy
      * @return string The stdout of the internal commands, generally shows the Rsync output
      * @throws exception\GitCommandException
      * @throws exception\RsyncException

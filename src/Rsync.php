@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace edwrodrig\deployer;
 
+use edwrodrig\deployer\exception\RsyncException;
 use edwrodrig\deployer\util\Util;
 
 /**
@@ -155,6 +156,7 @@ class Rsync
     /**
      * Execute deploying using Rsync
      * @param bool $test Test execution, execute rsync but not doing any changes, internally it uses --dry-run
+     * @uses Rsync::getCommand() to get the command to execute
      * @return string
      * @throws exception\RsyncException
      * @throws ssh\exception\InvalidConfigFileException
