@@ -5,7 +5,9 @@
     "authors": [
         {
             "name": "Edwin Rodríguez León",
-            "email": "edwrodrig@gmail.com"
+            "email": "edwrodrig@gmail.com",
+            "homepage": "http://www.edwin.cl",
+            "role": "Developer"
         }
     ],
     "keywords" : [
