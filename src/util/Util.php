@@ -3,11 +3,16 @@ declare(strict_types=1);
 
 namespace edwrodrig\deployer\util;
 
-
+/**
+ * Class Util
+ * @internal
+ * @package edwrodrig\deployer\util
+ */
 class Util
 {
     /**
      * Just execute a command.
+     * @internal
      * @param string $command Command to execute
      * @param null|string $current_working_dir The current working dir
      * @param array $env Environment variables The environment variables in an key value array
@@ -40,12 +45,14 @@ class Util
 
         $return = proc_close($process);
 
+        /** @noinspection PhpInternalEntityUsedInspection */
         return new CommandReturn($return, $std_out, $std_err);
 
     }
 
     /**
      * Create a temporary folder
+     * @internal
      * @return string The temp folder name
      * @throws exception\TempFolderCreationException
      */
@@ -61,8 +68,10 @@ class Util
 
         if ( is_dir($tempfile) ) {
             return $tempfile;
-        } else
+        } else {
+            /** @noinspection PhpInternalEntityUsedInspection */
             throw new exception\TempFolderCreationException($tempfile);
+        }
     }
 
 

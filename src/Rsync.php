@@ -3,8 +3,9 @@ declare(strict_types=1);
 
 namespace edwrodrig\deployer;
 
-use edwrodrig\deployer\exception\RsyncException;
-use edwrodrig\deployer\util\Util;
+
+use /** @noinspection PhpInternalEntityUsedInspection */
+edwrodrig\deployer\util\Util;
 
 /**
  * Class Rsync Deployer.
@@ -13,6 +14,7 @@ use edwrodrig\deployer\util\Util;
  * It copies the source files to a remote target directory comparing checksums and deleting not existant files.
  * You need to set the Ssh credentials.
  * Target ssh user, port and host must be set in the ssh config file, in the Ssh object
+ * @api
  * @see Rsync::getSsh() to set ssh credentials
  * @see Rsync::setTargetDir() to set the target dir
  * @see Rsync::setSourceDir() to set the source dir
@@ -51,6 +53,7 @@ class Rsync
      * Rsync constructor.
      *
      * Construct a Rsync deployer instance.
+     * @api
      */
     public function __construct() {
         $this->ssh = new ssh\Ssh;
@@ -60,6 +63,7 @@ class Rsync
      * The target dir to copy.
      *
      * It should be relative to the HOME PATH ot the remote account
+     * @api
      * @param string $dir
      * @return $this
      */
@@ -72,6 +76,7 @@ class Rsync
      * The source dir to copy.
      *
      * If you want to copy all files in the file /home/user/some_folder use /home/user/some_folder/*
+     * @api
      * @param string $dir
      * @return $this
      */
@@ -82,6 +87,7 @@ class Rsync
 
     /**
      * Set rsync executable. Needed when it is not in the PATH as rsync
+     * @api
      * @param string $executable
      * @return $this
      */
@@ -92,11 +98,13 @@ class Rsync
 
     /**
      * Check if rsync command exists
+     * @api
      * @return bool
      */
     public function doesExecutableExists() : bool {
         $version_command = sprintf('%s --version', $this->executable);
 
+        /** @noinspection PhpInternalEntityUsedInspection */
         if ( $result = Util::runCommand($version_command) ) {
             if ( $result->getExitCode() == 0 )
                 return true;
@@ -112,6 +120,7 @@ class Rsync
      * ```
      * -L transform symlink into referent file/dir
      * ```
+     * @api
      * @param bool $enabled
      * @return $this
      */
@@ -123,7 +132,6 @@ class Rsync
     /**
      * Get the rsync command to execute.
      *
-     * This is used internally and for debug and testing proposes.
      * The commands used in the command are the following
      * ```
      * -r recurse into directories
@@ -135,6 +143,7 @@ class Rsync
      * --delete delete extraneous files from dest dirs
      * --progress show progress during transfer
      * ```
+     * @internal This is used internally and for debug and testing proposes.
      * @param bool $dry_run --dry-run (perform a trial run with no changes made)
      * @return string
      * @throws ssh\exception\InvalidConfigFileException
@@ -157,6 +166,7 @@ class Rsync
      * Execute deploying using Rsync
      * @param bool $test Test execution, execute rsync but not doing any changes, internally it uses --dry-run
      * @uses Rsync::getCommand() to get the command to execute
+     * @api
      * @return string
      * @throws exception\RsyncException
      * @throws ssh\exception\InvalidConfigFileException
@@ -171,18 +181,23 @@ class Rsync
 
     /**
      * Run an rsync command. Just wrap the exit codes an standard output and error in Exception
+     * @internal It's used internally by some clases in this library to run git commands.
      * @param string $command
      * @return string The standard output, generally the progress of the rsync command
      * @throws exception\RsyncException
      */
     public static  function runRsyncCommand(string $command) : string {
+        /** @noinspection PhpInternalEntityUsedInspection */
         if ( $result = Util::runCommand($command) ) {
-            if ( $result->getExitCode() == 0 )
+            if ( $result->getExitCode() == 0 ) {
                 return $result->getStdOut();
-            else
+            } else {
+                /** @noinspection PhpInternalEntityUsedInspection */
                 throw new exception\RsyncException($result->getExitCode(), $result->getStdErrOrOut());
+            }
 
         } else {
+            /** @noinspection PhpInternalEntityUsedInspection */
             throw new exception\RsyncException(255, 'proc_open fail');
         }
     }
@@ -194,6 +209,7 @@ class Rsync
      * so if you want to change it,
      * for example to set the identify file,
      * you need to retrieve and call its methods.
+     * @api
      * @return ssh\Ssh
      */
     public function getSsh(): ssh\Ssh

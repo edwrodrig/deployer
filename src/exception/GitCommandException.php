@@ -4,17 +4,18 @@ declare(strict_types=1);
 namespace edwrodrig\deployer\exception;
 
 
+use edwrodrig\deployer\ssh\Ssh;
 use Exception;
 
+/**
+ * Class GitCommandException
+ * @api
+ * @package edwrodrig\deployer\exception
+ */
 class GitCommandException extends Exception
 {
 
     const ERRORS = [
-        '/ssh: Could not resolve hostname \S*: Name or service not known/',
-        '/Can\'t open user config file \S*/',
-        '/Warning: Identity file \S* not accessible: No such file or directory./',
-        '/Host key verification failed./',
-        '/Permission denied \(\S*/',
         '/nothing to commit, working directory clean/'
     ];
 
@@ -25,12 +26,20 @@ class GitCommandException extends Exception
 
     /**
      * GitCloneException constructor.
+     * @internal
      * @param $exit_code
      * @param string $output
      */
     public function __construct($exit_code, string $output = 'Other error')
     {
         $this->full_error = $output;
+
+        foreach ( Ssh::SSH_ERRORS as $error ) {
+            if ( preg_match($error, $output, $matches) ) {
+                parent::__construct($matches[0], $exit_code);
+                return;
+            }
+        }
 
         foreach ( self::ERRORS as $error ) {
             if ( preg_match($error, $output, $matches) ) {
@@ -44,6 +53,7 @@ class GitCommandException extends Exception
 
     /**
      * Return the full error message
+     * @api
      * @return string
      */
     public function getFullError() : string {

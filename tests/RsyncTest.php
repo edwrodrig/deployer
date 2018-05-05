@@ -44,7 +44,7 @@ class RsyncTest extends TestCase
     /**
      * @expectedException \edwrodrig\deployer\exception\RsyncException
      * @expectedExceptionCode 255
-     * @expectedExceptionMessage ssh: Could not resolve hostname unknown_host: Name or service not known
+     * @expectedExceptionMessage Could not resolve hostname unknown_host: Name or service not known
      * @throws \edwrodrig\deployer\exception\RsyncException
      * @throws \edwrodrig\deployer\ssh\exception\InvalidConfigFileException
      * @throws \edwrodrig\deployer\ssh\exception\InvalidIdentityFileException

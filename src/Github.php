@@ -9,11 +9,12 @@ use edwrodrig\deployer\util\Util;
  * Class Github
  * Github deployer class. This class is minded to deploy github pages on github.
  *
- *
  * This class just clone a github repository, then copy specified files to the cloned repository folder using rsync, and then commiting and pushing the changes to the origin.
  * Rsync check the differences based on checksums and deletes files that are not in the source files.
  * The ssh github credentials and known_host are setted by default.
  * But you need to set the identity file for authentication
+ * @api
+ * @package edwrodrig\deployer
  * @see Github::setTargetUser() To set the github user
  * @see Github::setTargetRepoName() set the github repository name
  * @see Github::setTargetRepoBranch() set the github repository branch
@@ -67,6 +68,7 @@ class Github {
     /**
      * Github constructor
      * Construct a Github deployer.
+     * @api
      * @see Github::setTargetUser() To set the github user
      * @see Github::setTargetRepoName() set the github repository name
      * @see Github::setTargetRepoBranch() set the github repository branch
@@ -86,6 +88,7 @@ class Github {
      * It manages the ssh connection config, so if you want to change it,
      * for example to set the identify file,
      * you need to retrieve and call its methods.
+     * @api
      * @return ssh\Ssh
      */
     public function getSsh() : ssh\Ssh {
@@ -94,6 +97,7 @@ class Github {
 
     /**
      * Set the github user
+     * @api
      * @param string $user
      * @return Github
      */
@@ -106,7 +110,7 @@ class Github {
      * Return the clone command that will we used for the commit.
      *
      * You need to set the user, the repository name and the repository branch.
-     * This method is used for debug or testing purposes.
+     * @internal This method is used for debug or testing purposes.
      * @param string $folder_name The target folder where the repository is cloned
      * @see Github::setTargetUser() to set the target user
      * @see Github::setTargetRepoName() to set the target repository name
@@ -129,6 +133,7 @@ class Github {
      * This clone the target repo in a temp folder, then rsync with the source dir and finally commit back to origin.
      * You can do a test run with test param on true. Fails when no change is done.
      * The temp folder is always deleted
+     * @api
      * @param bool $test To just do a dry-run, the original repo is not changed
      * @uses Github::getCloneCommand() for the repository cloning
      * @uses Github::getCopyCommand() for the rsync copy
@@ -141,6 +146,7 @@ class Github {
      * @throws \edwrodrig\deployer\util\exception\TempFolderCreationException
      */
     public function execute(bool $test = false) : string {
+        /** @noinspection PhpInternalEntityUsedInspection */
         $folder_name = Util::createTempFolder();
 
         try {
@@ -186,21 +192,27 @@ class Github {
      * Utility method to run a git command.
      *
      * Just transform git errors to a GitCommandException with more clear information.
-     * It's used internally by some clases in this library
+     * @internal It's used internally by some clases in this library to run git commands.
      * @param string $command The command to run (ej: git add -A)
-     * @param string $current_working_dir currenct working dir of the command
+     * @param string $current_working_dir current working dir of the command
      * @param array $env Environment variables as an key value array
      * @return string The standard output of the command
      * @throws exception\GitCommandException At failure
      */
     public static function runGitCommand(string $command, string $current_working_dir, array $env) : string {
+
+        /** @noinspection PhpInternalEntityUsedInspection */
         if ( $result = Util::runCommand($command, $current_working_dir, $env) ) {
-            if ( $result->getExitCode() == 0 )
+
+            if ( $result->getExitCode() == 0 ) {
                 return $result->getStdOut();
-            else
+            } else {
+                /** @noinspection PhpInternalEntityUsedInspection */
                 throw new exception\GitCommandException($result->getExitCode(), $result->getStdErrOrOut());
+            }
 
         } else {
+            /** @noinspection PhpInternalEntityUsedInspection */
             throw new exception\GitCommandException(255, 'proc_open fail');
         }
     }
@@ -208,7 +220,6 @@ class Github {
     /**
      * Returns the rsync copy command.
      *
-     * This method is used for debug or testing purposes.
      * The params usend in the command are the following
      * ```
      * -r recurse into directories
@@ -221,6 +232,7 @@ class Github {
      * --progress show progress during transfer
      * --exclude=.git*
      * ```
+     * @internal This method is used for debug or testing purposes.
      * @param string $target
      * @return string
      */
@@ -233,6 +245,7 @@ class Github {
 
     /**
      * The target github repository name
+     * @api
      * @param string $target_repo_name
      * @return $this
      */
@@ -244,6 +257,7 @@ class Github {
 
     /**
      * The target github repository branch. In github pages it used to be master or gh_pages
+     * @api
      * @param string $target_repo_branch
      * @return $this
      */
@@ -258,6 +272,7 @@ class Github {
      *
      * This directory is copied to the repo and then commited when execute is called.
      * Don't use trailing / in the dir name
+     * @api
      * @param string $source_dir
      * @see Github::execute() To execute
      * @return $this

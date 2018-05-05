@@ -1,11 +1,23 @@
 <?php
+declare(strict_types=1);
+
 namespace edwrodrig\deployer\exception;
 
+use edwrodrig\deployer\ssh\Ssh;
 use Exception;
 
+/**
+ * Class RsyncException
+ * @api
+ * @package edwrodrig\deployer\exception
+ */
 class RsyncException extends Exception
 {
 
+    /**
+     * Exit codes of rsync.
+     * @see https://lxadm.com/Rsync_exit_codes
+     */
     const EXIT_CODES = [
         1 => 'Syntax or usage error',
         2 => 'Protocol incompatibility',
@@ -29,14 +41,6 @@ class RsyncException extends Exception
         127 => 'Executable not found'
     ];
 
-    const SSH_ERRORS = [
-        '/ssh: Could not resolve hostname \S*: Name or service not known/',
-        '/Can\'t open user config file \S*/',
-        '/Warning: Identity file \S* not accessible: No such file or directory./',
-        '/Host key verification failed./',
-        '/Permission denied \(\S*/'
-    ];
-
     /**
      * @var string
      */
@@ -44,6 +48,7 @@ class RsyncException extends Exception
 
     /**
      * RsyncException constructor.
+     * @internal
      * @param int $exit_code Rsync exit code
      * @param string $output
      */
@@ -51,7 +56,7 @@ class RsyncException extends Exception
     {
         $this->full_error = $output;
 
-        foreach ( self::SSH_ERRORS as $error ) {
+        foreach ( Ssh::SSH_ERRORS as $error ) {
             if ( preg_match($error, $output, $matches) ) {
                 parent::__construct($matches[0], $exit_code);
                 return;
@@ -63,6 +68,7 @@ class RsyncException extends Exception
 
     /**
      * Return the full error message
+     * @api
      * @return string
      */
     public function getFullError() : string {

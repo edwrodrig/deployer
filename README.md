@@ -12,6 +12,8 @@ Deploy static generated pages to:
  * a github repository used as a [github pages](https://pages.github.com/) host.
  * a remote folder using __rsync__ through __ssh__.
  
+My infrastructure is targeted to __Ubuntu 16.04__ machines with last __php7.2__ installed from [ppa:ondrej/php](https://launchpad.net/~ondrej/+archive/ubuntu/php)
+ 
 All transfer are secured by ssh with proper 
 **[host key fingerprints](https://superuser.com/questions/421997/what-is-a-ssh-key-fingerprint-and-how-is-it-generated)** and
 **[private keys](https://unix.stackexchange.com/questions/23291/how-to-ssh-to-remote-server-using-a-private-key)**.

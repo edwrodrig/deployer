@@ -106,7 +106,7 @@ class GithubTest extends TestCase
      * @throws \edwrodrig\deployer\ssh\exception\InvalidKnownHostsFile
      * @throws \edwrodrig\deployer\util\exception\TempFolderCreationException
      * @expectedException \edwrodrig\deployer\exception\GitCommandException
-     * @expectedExceptionMessage ssh: Could not resolve hostname github: Name or service not known
+     * @expectedExceptionMessage Could not resolve hostname github: Name or service not known
      */
     public function testWrongConfigFile() {
         sleep(1);
