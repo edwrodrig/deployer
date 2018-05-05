@@ -41,6 +41,9 @@ The virtual machine is provided as a [VirtualBox](https://www.virtualbox.org) ap
 ## License
 MIT license. Use it as you want at your own risk.
 
+## About language
+I'm not a native english writer, so there may be a lot of grammar and orthographical errors on text, I'm just trying my best. But feel free to correct my language, any contribution is welcome and for me they are a learning instance. 
+
 
 
 
