@@ -3,7 +3,8 @@ declare(strict_types=1);
 
 namespace edwrodrig\deployer;
 
-use edwrodrig\deployer\util\Util;
+use /** @noinspection PhpInternalEntityUsedInspection */
+    edwrodrig\deployer\util\Util;
 
 /**
  * Class Github
@@ -11,16 +12,15 @@ use edwrodrig\deployer\util\Util;
  *
  * This class just clone a github repository, then copy specified files to the cloned repository folder using rsync, and then commiting and pushing the changes to the origin.
  * Rsync check the differences based on checksums and deletes files that are not in the source files.
+ * You need to set the github {@see Github::setTargetUser() user},
+ * the github {@see Github::setTargetRepoName() repository name} and {@see GithubTargetRepoBranch() branch}.
+ * Also need to set the {@see Github::setSourceDir source directory} to commit.
+ * When all is set you can {@see Github::execute() execute} the deploy.
  * The ssh github credentials and known_host are setted by default.
- * But you need to set the identity file for authentication
+ * But you need to {@see Github::getSsh() set the identity file} for authentication
  * @api
  * @package edwrodrig\deployer
- * @see Github::setTargetUser() To set the github user
- * @see Github::setTargetRepoName() set the github repository name
- * @see Github::setTargetRepoBranch() set the github repository branch
- * @see Github::setSourceDir() set the github source dir to commit
- * @see Github::execute() execute the command
- * @see Github::getSsh() to set ssh configuration, specially the Identity file
+ * @see https://github.com/edwrodrig/deployer/blob/master/examples/github_deploy.php Github deploy example
  */
 class Github {
 
@@ -69,12 +69,6 @@ class Github {
      * Github constructor
      * Construct a Github deployer.
      * @api
-     * @see Github::setTargetUser() To set the github user
-     * @see Github::setTargetRepoName() set the github repository name
-     * @see Github::setTargetRepoBranch() set the github repository branch
-     * @see Github::setSourceDir() set the github source dir to commit
-     * @see Github::execute() execute the command
-     * @see Github::getSsh() to set ssh configuration, specially the Identity file
      */
     public function __construct() {
         $this->ssh = new ssh\Ssh;
@@ -112,9 +106,6 @@ class Github {
      * You need to set the user, the repository name and the repository branch.
      * @internal This method is used for debug or testing purposes.
      * @param string $folder_name The target folder where the repository is cloned
-     * @see Github::setTargetUser() to set the target user
-     * @see Github::setTargetRepoName() to set the target repository name
-     * @see Github::setTargetRepoBranch() to set the target repository branch
      * @return string
      */
     public function getCloneCommand(string $folder_name) {
@@ -270,11 +261,10 @@ class Github {
     /**
      * The source dir to commit.
      *
-     * This directory is copied to the repo and then commited when execute is called.
+     * This directory is copied to the repo and then committed when {@see Github::execute() execute} is called.
      * Don't use trailing / in the dir name
      * @api
      * @param string $source_dir
-     * @see Github::execute() To execute
      * @return $this
      */
     public function setSourceDir(string $source_dir): Github

@@ -55,13 +55,7 @@ class Ssh
     /**
      * Set the ssh config file.
      *
-     * Here some example of a config file content
-     * ```
-     * Host target
-     *    HostName localhost
-     *    User tc
-     *    Port 4222
-     * ```
+     * @see https://github.com/edwrodrig/deployer/blob/master/tests/files/correct/config Example of file
      * @param string $config_file
      * @api
      * @return Ssh
@@ -77,6 +71,7 @@ class Ssh
      *
      * Set to null if you want to use default identity.
      * Generate new identity files with ssh-keygen. Append the id_rsa.pub in the ~/.ssh/authorized_keys file in the target ssh account
+     * @see https://github.com/edwrodrig/deployer/blob/master/tests/files/correct/id_rsa Example of a identity file
      * @api
      * @param string|null $identity_file
      * @return Ssh
@@ -91,6 +86,7 @@ class Ssh
      * Set the known hosts file.
      *
      * This file is used to check the target host and prevent man in the middle vulnerabilities.
+     * @see https://github.com/edwrodrig/deployer/blob/master/tests/files/correct/known_hosts Example of known hosts file
      * @api
      * @param string $known_hosts_file
      * @return Ssh
@@ -104,9 +100,6 @@ class Ssh
     /**
      * Return a ssh command using the different configuration files. All files must exist or this would fail
      * @internal This could be used for debug
-     * @see Ssh::setConfigFile()
-     * @see Ssh::setKnownHostsFile()
-     * @see Ssh::setIdentityFile()
      * @source 4 6 If identity is present then create a command line option to set it
      * @return string the command itself
      * @throws exception\InvalidConfigFileException

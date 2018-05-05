@@ -11,14 +11,12 @@ edwrodrig\deployer\util\Util;
  * Class Rsync Deployer.
  *
  * This class is minded to do a rsync based deploy using ssh.
- * It copies the source files to a remote target directory comparing checksums and deleting not existant files.
+ * It copies the {@see Rsync::setSourceDir() source files} to a {@see Rsync::setTargetDir() remote target directory} comparing checksums and deleting not existant files.
  * You need to set the Ssh credentials.
- * Target ssh user, port and host must be set in the ssh config file, in the Ssh object
+ * Target ssh user, port and host must be set in the {@see Ssh::setConfigFile() ssh config file}, in the {@see Rsync::getSsh() Ssh object}
+ * When all is correctly set you can {@see Rsync::execute() execute} the task.
  * @api
- * @see Rsync::getSsh() to set ssh credentials
- * @see Rsync::setTargetDir() to set the target dir
- * @see Rsync::setSourceDir() to set the source dir
- * @see Rsync::execute() to execute the task
+ * @see https://github.com/edwrodrig/deployer/blob/master/examples/rsync_deploy.php Rsync deploy example
  * @package edwrodrig\deployer
  */
 class Rsync
@@ -62,7 +60,7 @@ class Rsync
     /**
      * The target dir to copy.
      *
-     * It should be relative to the HOME PATH ot the remote account
+     * It should be relative to the HOME PATH of the remote account
      * @api
      * @param string $dir
      * @return $this
@@ -86,7 +84,9 @@ class Rsync
     }
 
     /**
-     * Set rsync executable. Needed when it is not in the PATH as rsync
+     * Set rsync executable.
+     *
+     * Needed when it is not in the PATH as rsync
      * @api
      * @param string $executable
      * @return $this
@@ -97,7 +97,7 @@ class Rsync
     }
 
     /**
-     * Check if rsync command exists
+     * Check if rsync command exists.
      * @api
      * @return bool
      */
@@ -180,7 +180,7 @@ class Rsync
     }
 
     /**
-     * Run an rsync command. Just wrap the exit codes an standard output and error in Exception
+     * Run an rsync command. Just wrap the exit codes an standard output and error in a {@see exception\RsyncException exception}
      * @internal It's used internally by some clases in this library to run git commands.
      * @param string $command
      * @return string The standard output, generally the progress of the rsync command
@@ -207,7 +207,7 @@ class Rsync
      *
      * It manages the ssh connection config,
      * so if you want to change it,
-     * for example to set the identify file,
+     * for example to {@see Ssh::setIdentityFile() set the identify file},
      * you need to retrieve and call its methods.
      * @api
      * @return ssh\Ssh
