@@ -218,6 +218,7 @@ class Github {
      * -t preserve modification times
      * -v verbose
      * -z compress
+     * -L transform symlink into referent file/dir
      * -c skip based on checksum, not mod-time & size
      * --delete delete extraneous files from dest dirs
      * --progress show progress during transfer
@@ -228,7 +229,7 @@ class Github {
      * @return string
      */
     public function getCopyCommand(string $target) {
-        return sprintf('rsync -rptvz %s %s --exclude=.git* --progress --delete',
+        return sprintf('rsync -rptvzL %s %s --exclude=.git* --progress --delete',
             $this->source_dir . '/.',
             $target
         );
